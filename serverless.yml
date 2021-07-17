@@ -1,0 +1,54 @@
+service: appsyncmasterclass-backend
+frameworkVersion: "2"
+
+plugins:
+  - serverless-appsync-plugin
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-east-2
+
+package:
+  exclude:
+    - package-lock.json
+    - package.json
+
+custom:
+  appSync:
+    - ${file(serverless.appsync-api.yml)}
+
+resources:
+  Resources:
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        AutoVerifiedAttributes:
+          - email
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireLowercase: false
+            RequireNumbers: false
+            RequireUppercase: false
+            RequireSymbols: false
+        UsernameAttributes:
+          - email
+        Schema:
+          - AttributeDataType: String
+            Name: name
+            Required: false
+            Mutable: true
+    WebUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        UserPoolId: !Ref CognitoUserPool
+        ClientName: web
+        ExplicitAuthFlows:
+          - ALLOW_USER_SRP_AUTH
+          - ALLOW_USER_PASSWORD_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+        PreventUserExistenceErrors: ENABLED # protects from user knowing if account/password is incorrect for security
+  Outputs:
+    CognitoUserPoolId:
+      Value: !Ref CognitoUserPool
