@@ -2,6 +2,7 @@ const DynamoDB = require("aws-sdk/clients/dynamodb");
 const DocumentClient = new DynamoDB.DocumentClient();
 const Chance = require("chance");
 const chance = new Chance();
+
 const { USERS_TABLE } = process.env;
 
 module.exports.handler = async (event) => {
@@ -13,22 +14,24 @@ module.exports.handler = async (event) => {
       alpha: true,
       numeric: true,
     });
+    const screenName = `${name.replace(/[^a-zA-Z0-9]/g, "")}${suffix}`;
     const user = {
       id: event.userName,
-      name: name,
-      screenName: `${name.replace(/[^a-zA-Z0-9]/g, "")}${suffix}`,
+      name,
+      screenName,
       createdAt: new Date().toJSON(),
       followersCount: 0,
       followingCount: 0,
       tweetsCount: 0,
-      likesCount: 0,
+      likesCounts: 0,
     };
 
     await DocumentClient.put({
       TableName: USERS_TABLE,
-      item: user,
-      ConditionExpression: "attribute_not_exists(id)", // avoid writing twice
+      Item: user,
+      ConditionExpression: "attribute_not_exists(id)",
     }).promise();
+
     return event;
   } else {
     return event;
