@@ -279,11 +279,50 @@ const a_user_calls_getTweets = async (user, userId, limit, nextToken) => {
     variables,
     user.accessToken
   );
-  const newTweet = data.getTweets;
+  const results = data.getTweets;
 
   console.log(`[${user.username}] - posted new tweet`);
 
-  return newTweet;
+  return results;
+};
+
+const a_user_calls_getMyTimeline = async (user, limit, nextToken) => {
+  const getMyTimeline = `query getMyTimeline( $limit: Int!, $nextToken: String) {
+    getMyTimeline(limit: $limit, nextToken: $nextToken) {
+      nextToken
+      tweets {
+        id
+        createdAt
+        profile {
+          id
+          name
+          screenName
+        }
+        ... on Tweet {          
+          text
+          replies
+          likes
+          retweets
+        }
+      }
+    }
+  }`;
+  const variables = {
+    limit,
+    nextToken,
+  };
+
+  const data = await GraphQL(
+    process.env.API_URL,
+    getMyTimeline,
+    variables,
+    user.accessToken
+  );
+  const results = data.getMyTimeline;
+
+  console.log(`[${user.username}] - fetched `);
+
+  return results;
 };
 
 module.exports = {
@@ -293,6 +332,7 @@ module.exports = {
   a_user_calls_tweet,
   a_user_calls_getTweets,
   a_user_signs_up,
+  a_user_calls_getMyTimeline,
   we_invoke_an_appsync_template,
   we_invoke_confirmUserSignup,
   we_invoke_getImageUploadUrl,
