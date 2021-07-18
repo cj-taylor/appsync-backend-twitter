@@ -3,8 +3,7 @@ const DocumentClient = new DynamoDB.DocumentClient();
 const ulid = require("ulid");
 const { TweetTypes } = require("../lib/constants");
 
-const { USERS_TABLE_NAME, TIMELINES_TABLE_NAME, TWEETS_TABLE_NAME } =
-  process.env;
+const { USERS_TABLE, TIMELINES_TABLE, TWEETS_TABLE } = process.env;
 
 module.exports.handler = async (event) => {
   const { text } = event.arguments;
@@ -13,7 +12,7 @@ module.exports.handler = async (event) => {
   const timestamp = new Date().toJSON();
 
   const newTweet = {
-    __typename: TweetTypes.TWEET, // enables unmarshalling
+    __typename: TweetTypes.TWEET,
     id,
     text,
     creator: username,
@@ -27,13 +26,13 @@ module.exports.handler = async (event) => {
     TransactItems: [
       {
         Put: {
-          TableName: TWEETS_TABLE_NAME,
+          TableName: TWEETS_TABLE,
           Item: newTweet,
         },
       },
       {
         Put: {
-          TableName: TIMELINES_TABLE_NAME,
+          TableName: TIMELINES_TABLE,
           Item: {
             userId: username,
             tweetId: id,
@@ -43,7 +42,7 @@ module.exports.handler = async (event) => {
       },
       {
         Update: {
-          TableName: USERS_TABLE_NAME,
+          TableName: USERS_TABLE,
           Key: {
             id: username,
           },
