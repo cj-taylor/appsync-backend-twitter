@@ -17,6 +17,9 @@ mappingTemplates:
     field: getTweets
     dataSource: tweetsTable
   - type: Query
+    field: getMyTimeline
+    dataSource: timelinesTable
+  - type: Query
     field: getImageUploadUrl
     dataSource: getImageUploadUrlFunction
     # direct integration with Lambda, so we don't need specific templates
@@ -36,6 +39,9 @@ mappingTemplates:
   - type: Tweet
     field: profile
     dataSource: usersTable
+  - type: TimelinePage
+    field: tweets
+    dataSource: tweetsTable
 
 dataSources:
   - type: NONE
@@ -56,3 +62,10 @@ dataSources:
     name: tweetsTable
     config:
       tableName: !Ref TweetsTable
+  - type: AMAZON_DYNAMODB
+    name: timelinesTable
+    config:
+      tableName: !Ref TimelinesTable
+
+substitutions:
+  TweetsTable: !Ref TweetsTable
