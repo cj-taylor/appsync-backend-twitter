@@ -74,6 +74,9 @@ resources:
     CognitoUserPool:
       Type: AWS::Cognito::UserPool
       Properties:
+        EmailConfiguration:
+          EmailSendingAccount: DEVELOPER
+          SourceArn: arn:aws:ses:us-east-1:307094374423:identity/bluegrassdev@gmail.com
         AutoVerifiedAttributes:
           - email
         Policies:
@@ -130,4 +133,3 @@ resources:
       Value: ${self:custom.region}
     WebCognitoUserPoolClientId:
       Value: !Ref WebUserPoolClient
-    
