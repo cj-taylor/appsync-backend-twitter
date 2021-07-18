@@ -13,20 +13,29 @@ mappingTemplates:
     # Convention, so we don't need to explicitly add
     # request: Query.getMyProfile.request.vtl
     # response: Query.getMyProfile.response.vtl
-  - type: Mutation
-    field: editMyProfile
-    dataSource: usersTable
+  - type: Query
+    field: getTweets
+    dataSource: tweetsTable
   - type: Query
     field: getImageUploadUrl
     dataSource: getImageUploadUrlFunction
     # direct integration with Lambda, so we don't need specific templates
     request: false
     response: false
+
+  - type: Mutation
+    field: editMyProfile
+    dataSource: usersTable
   - type: Mutation
     field: tweet
     dataSource: tweetFunction
     request: false
     response: false
+
+  # NESTED FIELDS
+  - type: Tweet
+    field: profile
+    dataSource: usersTable
 
 dataSources:
   - type: NONE
@@ -43,3 +52,7 @@ dataSources:
     name: tweetFunction
     config:
       functionName: tweet
+  - type: AMAZON_DYNAMODB
+    name: tweetsTable
+    config:
+      tableName: !Ref TweetsTable
