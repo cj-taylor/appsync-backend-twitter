@@ -68,6 +68,17 @@ const we_invoke_tweet = async (username, text) => {
   return await handler(event, context);
 };
 
+const we_invoke_an_appsync_template = (templatePath, context) => {
+  const template = fs.readFileSync(templatePath, { encoding: "utf-8" });
+  const ast = velocityTemplate.parse(template);
+  const compiler = new velocityTemplate.Compile(ast, {
+    velocityMapper: velocityMapper,
+    escape: false,
+  });
+
+  return JSON.parse(compiler.render(context));
+};
+
 const a_user_signs_up = async (password, name, email) => {
   const cognito = new AWS.CognitoIdentityServiceProvider();
 
@@ -106,17 +117,6 @@ const a_user_signs_up = async (password, name, email) => {
     name,
     email,
   };
-};
-
-const we_invoke_an_appsync_template = (templatePath, context) => {
-  const template = fs.readFileSync(templatePath, { encoding: "utf-8" });
-  const ast = velocityTemplate.parse(template);
-  const compiler = new velocityTemplate.Compile(ast, {
-    velocityMapper: velocityMapper,
-    escape: false,
-  });
-
-  return JSON.parse(compiler.render(context));
 };
 
 const a_user_calls_getMyProfile = async (user) => {
@@ -217,6 +217,11 @@ const a_user_calls_tweet = async (user, text) => {
   const tweet = `mutation tweet($text: String!) {
     tweet(text: $text) {
       id
+      profile {
+        id
+        name
+        screenName
+      }
       createdAt
       text
       replies
@@ -241,11 +246,52 @@ const a_user_calls_tweet = async (user, text) => {
   return newTweet;
 };
 
+const a_user_calls_getTweets = async (user, userId, limit, nextToken) => {
+  const getTweets = `query getTweets($userId: ID!, $limit: Int!, $nextToken: String) {
+    getTweets(userId: $userId, limit: $limit, nextToken: $nextToken) {
+      nextToken
+      tweets {
+        id
+        createdAt
+        profile {
+          id
+          name
+          screenName
+        }
+        ... on Tweet {          
+          text
+          replies
+          likes
+          retweets
+        }
+      }
+    }
+  }`;
+  const variables = {
+    userId,
+    limit,
+    nextToken,
+  };
+
+  const data = await GraphQL(
+    process.env.API_URL,
+    getTweets,
+    variables,
+    user.accessToken
+  );
+  const newTweet = data.getTweets;
+
+  console.log(`[${user.username}] - posted new tweet`);
+
+  return newTweet;
+};
+
 module.exports = {
   a_user_calls_editMyProfile,
   a_user_calls_getImageUploadUrl,
   a_user_calls_getMyProfile,
   a_user_calls_tweet,
+  a_user_calls_getTweets,
   a_user_signs_up,
   we_invoke_an_appsync_template,
   we_invoke_confirmUserSignup,
