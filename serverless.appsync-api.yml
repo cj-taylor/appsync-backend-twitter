@@ -34,6 +34,9 @@ mappingTemplates:
     dataSource: tweetFunction
     request: false
     response: false
+  - type: Mutation
+    field: like
+    dataSource: likesMutation
 
   # NESTED FIELDS
   - type: Tweet
@@ -66,6 +69,25 @@ dataSources:
     name: timelinesTable
     config:
       tableName: !Ref TimelinesTable
+  - type: AMAZON_DYNAMODB
+    name: likesTable
+    config:
+      tableName: !Ref LikesTable
+  - type: AMAZON_DYNAMODB
+    name: likesMutation
+    config:
+      tableName: !Ref LikesTable
+      iamRoleStatements:
+        - Effect: Allow
+          Action: dynamodb:PutItem
+          Resource: !GetAtt LikesTable.Arn
+        - Effect: Allow
+          Action: dynamodb:UpdateItem
+          Resource:
+            - !GetAtt UsersTable.Arn
+            - !GetAtt TweetsTable.Arn
 
 substitutions:
   TweetsTable: !Ref TweetsTable
+  LikesTable: !Ref LikesTable
+  UsersTable: !Ref UsersTable
