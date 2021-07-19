@@ -25,6 +25,9 @@ mappingTemplates:
     # direct integration with Lambda, so we don't need specific templates
     request: false
     response: false
+  - type: Query
+    field: getLikes
+    dataSource: likesTable
 
   - type: Mutation
     field: editMyProfile
@@ -48,7 +51,7 @@ mappingTemplates:
   - type: Tweet
     field: liked
     dataSource: likesTable
-  - type: TimelinePage
+  - type: UnhydratedTweeetsPage
     field: tweets
     dataSource: tweetsTable
 
