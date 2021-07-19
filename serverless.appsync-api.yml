@@ -42,6 +42,9 @@ mappingTemplates:
   - type: Tweet
     field: profile
     dataSource: usersTable
+  - type: Tweet
+    field: liked
+    dataSource: likesTable
   - type: TimelinePage
     field: tweets
     dataSource: tweetsTable
