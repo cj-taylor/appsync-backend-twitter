@@ -92,6 +92,38 @@ functions:
           - !GetAtt TimelinesTable.Arn
           - !GetAtt TweetsTable.Arn
 
+  # get tweet
+  # decrement user tweetCount
+  # decretment tweetId retweetsCount
+  # delete from timelinesTable
+  # delete from tweetsTable
+  # delete from retweets table
+  unretweet:
+    handler: functions/unretweet.handler
+    environment:
+      USERS_TABLE: !Ref UsersTable
+      TWEETS_TABLE: !Ref TweetsTable
+      TIMELINES_TABLE: !Ref TimelinesTable
+      RETWEETS_TABLE: !Ref RetweetsTable
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:GetItem
+        Resource: !GetAtt TweetsTable.Arn
+      - Effect: Allow
+        Action: dynamodb:GetItem
+        Resource: !Sub "${TweetsTable.Arn}/index/retweetsByCreator" # access to query by index
+      - Effect: Allow
+        Action: dynamodb:UpdateItem
+        Resource:
+          - !GetAtt UsersTable.Arn
+          - !GetAtt TweetsTable.Arn
+      - Effect: Allow
+        Action: dynamodb:DeleteItem
+        Resource:
+          - !GetAtt TimelinesTable.Arn
+          - !GetAtt TweetsTable.Arn
+          - !GetAtt RetweetsTable.Arn
+
 resources:
   Resources:
     UsersTable:
