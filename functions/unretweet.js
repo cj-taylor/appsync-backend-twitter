@@ -1,6 +1,6 @@
+const _ = require("lodash");
 const DynamoDB = require("aws-sdk/clients/dynamodb");
 const DocumentClient = new DynamoDB.DocumentClient();
-const _ = require("lodash");
 
 const { USERS_TABLE, TIMELINES_TABLE, TWEETS_TABLE, RETWEETS_TABLE } =
   process.env;
@@ -20,12 +20,13 @@ module.exports.handler = async (event) => {
   if (!tweet) {
     throw new Error("Tweet is not found");
   }
-  const queryResp = await DynamoDB.query({
+
+  const queryResp = await DocumentClient.query({
     TableName: process.env.TWEETS_TABLE,
     IndexName: "retweetsByCreator",
     KeyConditionExpression: "creator = :creator AND retweetOf = :tweetId",
     ExpressionAttributeValues: {
-      ":creator": userId,
+      ":creator": username,
       ":tweetId": tweetId,
     },
     Limit: 1,
@@ -50,7 +51,7 @@ module.exports.handler = async (event) => {
     {
       Delete: {
         TableName: RETWEETS_TABLE,
-        Item: {
+        Key: {
           userId: username,
           tweetId,
         },
@@ -90,9 +91,9 @@ module.exports.handler = async (event) => {
     transactItems.push({
       Delete: {
         TableName: TIMELINES_TABLE,
-        Item: {
+        Key: {
           userId: username,
-          tweetId: id,
+          tweetId: retweet.id,
         },
       },
     });
