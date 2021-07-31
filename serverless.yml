@@ -110,7 +110,7 @@ functions:
         Action: dynamodb:GetItem
         Resource: !GetAtt TweetsTable.Arn
       - Effect: Allow
-        Action: dynamodb:GetItem
+        Action: dynamodb:Query
         Resource: !Sub "${TweetsTable.Arn}/index/retweetsByCreator" # access to query by index
       - Effect: Allow
         Action: dynamodb:UpdateItem
