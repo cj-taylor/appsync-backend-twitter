@@ -176,6 +176,8 @@ resources:
             AttributeType: S
           - AttributeName: retweetOf
             AttributeType: S
+          - AttributeName: inReplyToTweetId
+            AttributeType: S
         GlobalSecondaryIndexes:
           - IndexName: byCreator
             KeySchema:
@@ -190,6 +192,14 @@ resources:
               - AttributeName: creator
                 KeyType: HASH
               - AttributeName: retweetOf
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: repliesForTweet # a sparse index
+            KeySchema:
+              - AttributeName: inReplyToTweetId
+                KeyType: HASH
+              - AttributeName: id
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL

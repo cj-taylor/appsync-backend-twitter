@@ -1,7 +1,7 @@
+const _ = require("lodash");
 const DynamoDB = require("aws-sdk/clients/dynamodb");
 const DocumentClient = new DynamoDB.DocumentClient();
 const ulid = require("ulid");
-const _ = require("lodash");
 const { TweetTypes } = require("../lib/constants");
 const { getTweetById } = require("../lib/tweets");
 
@@ -25,9 +25,8 @@ module.exports.handler = async (event) => {
     id,
     creator: username,
     createdAt: timestamp,
-    retweetOf: tweetId,
     inReplyToTweetId: tweetId,
-    inReplyToUserIds: [inReplyToUserIds],
+    inReplyToUserIds,
     text,
     replies: 0,
     likes: 0,
@@ -73,9 +72,8 @@ module.exports.handler = async (event) => {
         Item: {
           userId: username,
           tweetId: id,
-          retweetOf: tweetId,
           timestamp,
-          inReplyToTweetId,
+          inReplyToTweetId: tweetId,
           inReplyToUserIds,
         },
       },
@@ -92,7 +90,7 @@ module.exports.handler = async (event) => {
 async function getUserIdsToReplyTo(tweet) {
   let userIds = [tweet.creator];
   if (tweet.__typename === TweetTypes.REPLY) {
-    userIds.concat(tweet.inReplyToUserIds);
+    userIds = userIds.concat(tweet.inReplyToUserIds);
   } else if (tweet.__typename === TweetTypes.RETWEET) {
     const retweetOf = await getTweetById(tweet.retweetOf);
     userIds = userIds.concat(await getUserIdsToReplyTo(retweetOf));
