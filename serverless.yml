@@ -76,6 +76,26 @@ functions:
           - !GetAtt TimelinesTable.Arn
           - !GetAtt TweetsTable.Arn
           - !GetAtt RetweetsTable.Arn
+  reply:
+    handler: functions/reply.handler
+    environment:
+      TWEETS_TABLE: !Ref TweetsTable
+      USERS_TABLE: !Ref UsersTable
+      TIMELINES_TABLE: !Ref TimelinesTable
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:GetItem
+        Resource: !GetAtt TweetsTable.Arn
+      - Effect: Allow
+        Action: dynamodb:UpdateItem
+        Resource:
+          - !GetAtt UsersTable.Arn
+          - !GetAtt TweetsTable.Arn
+      - Effect: Allow
+        Action: dynamodb:PutItem
+        Resource:
+          - !GetAtt TimelinesTable.Arn
+          - !GetAtt TweetsTable.Arn
   tweet:
     handler: functions/tweet.handler
     environment:
