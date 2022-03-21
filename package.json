@@ -10,7 +10,8 @@
     "exportEnv": "sls export-env && sls manifest",
     "test": "jest --verbose ./__tests__/test_cases/unit --silent",
     "integration-test": "jest --verbose ./__tests__/test_cases/integration --silent",
-    "e2e-test": "jest --verbose ./__tests__/test_cases/e2e"
+    "e2e-test": "jest --verbose ./__tests__/test_cases/e2e",
+    "tests": "npm run exportEnv && npm run test && npm run integration-test && npm run e2e-test"
   },
   "repository": {
     "type": "git",
