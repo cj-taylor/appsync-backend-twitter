@@ -68,6 +68,11 @@ mappingTemplates:
     dataSource: usersTable
     request: Tweet.profile.request.vtl
     response: Tweet.profile.response.vtl
+  - type: Reply
+    field: profile
+    dataSource: usersTable
+    request: Tweet.profile.request.vtl
+    response: Tweet.profile.response.vtl
   - type: Tweet
     field: liked
     dataSource: likesTable
@@ -77,6 +82,12 @@ mappingTemplates:
   - type: Retweet
     field: retweetOf
     dataSource: tweetsTable
+  - type: Reply
+    field: inReplyToTweet
+    dataSource: tweetsTable
+  - type: Reply
+    field: inReplyToUsers
+    dataSource: usersTable
   - type: UnhydratedTweeetsPage
     field: tweets
     dataSource: tweetsTable

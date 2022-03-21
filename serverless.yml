@@ -7,6 +7,18 @@ plugins:
   - serverless-export-env # downloads as .env to load in test cases
   - serverless-manifest-plugin
 
+custom:
+  region: ${opt:region, self:provider.region}
+  stage: ${opt:stage, self:provider.stage}
+  appSync:
+    - ${file(serverless.appsync-api.yml)}
+
+  manifest:
+    postProcess: ./processManifest.js
+    disablePostDeployGeneration: true
+    disableOutput: true
+    silent: true
+
 provider:
   name: aws
   runtime: nodejs12.x
@@ -19,18 +31,6 @@ package:
   exclude:
     - package-lock.json
     - package.json
-
-custom:
-  region: ${opt:region, self:provider.region}
-  stage: ${opt:stage, self:provider.stage}
-  appSync:
-    - ${file(serverless.appsync-api.yml)}
-
-  manifest:
-    postProcess: ./processManifest.js
-    disablePostDeployGeneration: true
-    disableOutput: true
-    silent: true
 
 functions:
   confirmUserSignup:
@@ -270,7 +270,7 @@ resources:
       Properties:
         EmailConfiguration:
           EmailSendingAccount: DEVELOPER
-          SourceArn: arn:aws:ses:us-east-1:307094374423:identity/bluegrassdev@gmail.com
+          SourceArn: arn:aws:ses:us-east-1:144210659423:identity/bluegrassdev@gmail.com
         AutoVerifiedAttributes:
           - email
         Policies:
