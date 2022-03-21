@@ -10,6 +10,9 @@ mappingTemplates:
   - type: Query
     field: getMyProfile
     dataSource: usersTable
+  - type: Query
+    field: getProfile
+    dataSource: usersTable
     # Convention, so we don't need to explicitly add
     # request: Query.getMyProfile.request.vtl
     # response: Query.getMyProfile.response.vtl
